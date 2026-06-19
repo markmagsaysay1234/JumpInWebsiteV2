@@ -1,11 +1,12 @@
-import React from 'react';
-import heroVisual from './assets/hero-visual.png';
-import aboutImg from './assets/about-img.png';
-import whoCrew from './assets/who-crew.png';
-import whoLand from './assets/who-landbased.png';
-import whoCorp from './assets/who-corp.png';
-import whoAdmin from './assets/who-admin.png';
-import learningPerson from './assets/learning-person.png';
+import React, { useEffect, useState } from 'react';
+import logo from './assets/logo-white.png';
+import heroVisual from './assets/hero-visual.webp';
+import aboutImg from './assets/about-img.webp';
+import whoCrew from './assets/who-crew-1.webp';
+import whoLand from './assets/who-crew-2.webp';
+import whoCorp from './assets/who-crew-3.webp';
+import whoAdmin from './assets/who-crew-4.webp';
+import learningPerson from './assets/learning-person.webp';
 import talentImg from './assets/talent-img.png';
 import learnImg from './assets/learn-img.png';
 import progressScreen from './assets/progress-screen.png';
@@ -13,8 +14,14 @@ import dashboardLaptop from './assets/dashboard-laptop.png';
 
 const GREEN = '#97A961';
 
-function Logo({ dark = false }) {
-  return <div className="logo"><span>jump</span><b>in</b><sup>™</sup></div>;
+function Logo() {
+  return (
+    <img
+      src={logo}
+      alt="JumpIn"
+      className="jumpin-logo"
+    />
+  );
 }
 
 const featureCards = [
@@ -67,7 +74,46 @@ function SectionTitle({eyebrow, title, centered=false}) {
   </div>
 }
 
+const navLinks = [
+  { label: 'Home', href: '#home', id: 'home' },
+  { label: 'About JumpIn', href: '#about', id: 'about' },
+  { label: 'Learning Content', href: '#learning-content', id: 'learning-content' },
+  { label: 'Role-Based Learning', href: '#role-based-learning', id: 'role-based-learning' },
+  { label: 'How It Works', href: '#how-it-works', id: 'how-it-works' },
+  { label: 'Dashboards', href: '#dashboards', id: 'dashboards' },
+  { label: 'Help Center', href: '#help-center', id: 'help-center' },
+];
+
 function App() {
+  const [activeSection, setActiveSection] = useState('home');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 130;
+
+      navLinks.forEach((link) => {
+        const section = document.getElementById(link.id);
+
+        if (section) {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.offsetHeight;
+
+          if (
+            scrollPosition >= sectionTop &&
+            scrollPosition < sectionTop + sectionHeight
+          ) {
+            setActiveSection(link.id);
+          }
+        }
+      });
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return <>
     <header className="topbar sticky-top">
       <nav className="navbar navbar-expand-lg navbar-dark container-xxl">
@@ -75,32 +121,39 @@ function App() {
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span className="navbar-toggler-icon" /></button>
         <div id="nav" className="collapse navbar-collapse">
           <ul className="navbar-nav mx-auto gap-xl-4">
-            {['Home','About JumpIn','Learning Content','Role-Based Learning','How It Works','Dashboards','Help Center'].map((x,i)=><li className="nav-item" key={x}><a className={'nav-link '+(i===0?'active':'')} href="#">{x}</a></li>)}
+            {navLinks.map((link) => (
+              <li className="nav-item" key={link.id}>
+                <a
+                  className={`nav-link ${activeSection === link.id ? 'active' : ''}`}
+                  href={link.href}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
           </ul>
           <a className="btn btn-green" href="#">Login to JumpIn</a>
         </div>
       </nav>
     </header>
 
-    <section className="hero">
+    <section id="home" className="hero">
       <div className="container-xxl hero-inner">
-        <div className="row align-items-center g-5">
+        <div className="row">
           <div className="col-lg-6 hero-copy">
-            <Logo />
             <h1>Your Role-Based<br/>Learning Management System</h1>
             <p>Access the learning you need, when you need it. E-learning courses, articles, case studies, reading materials and scenario-based roleplays — all in one place.</p>
             <div className="hero-icons">
               {['Role-Based Learning','Learn Anytime, Anywhere','Track Progress and Completion','Support Your Team’s Learning'].map((x,i)=><div key={x}><i className={`bi ${['bi-journal-bookmark','bi-phone','bi-graph-up-arrow','bi-people'][i]}`}></i><span>{x}</span></div>)}
             </div>
-            <div className="d-flex gap-3 flex-wrap"><a className="btn btn-green btn-lg">Login to JumpIn</a><a className="btn btn-outline-light btn-lg">Book a Demo</a></div>
+            <div className="d-flex gap-3 flex-wrap mb-5"><a className="btn btn-green btn-lg">Login to JumpIn</a><a className="btn btn-outline-light btn-lg">Book a Demo</a></div>
           </div>
-          <div className="col-lg-6"><img className="hero-img" src={heroVisual} alt="JumpIn platform preview" /></div>
         </div>
       </div>
     </section>
 
     <main>
-      <section className="section about">
+      <section id="about" className="section about">
         <div className="container-xxl">
           <div className="row align-items-center g-5">
             <div className="col-lg-5"><img className="rounded-img" src={aboutImg} alt="Crew learning on vessel" /></div>
@@ -119,7 +172,7 @@ function App() {
         </div>
       </section>
 
-      <section className="section learning">
+      <section id="learning-content" className="section learning">
         <div className="container-xxl"><div className="row g-4 align-items-stretch">
           <div className="col-lg-3"><SectionTitle title="Learning Content Available"/><p>JumpIn offers a variety of learning formats to support different learning needs and preferences.</p><a className="btn btn-blue mt-4"><i className="bi bi-book me-2"></i>Explore Content Library</a></div>
           <div className="col-lg-2 d-none d-lg-block"><img className="learning-person" src={learningPerson}/></div>
@@ -127,7 +180,7 @@ function App() {
         </div></div>
       </section>
 
-      <section className="section role-section">
+      <section id="role-based-learning" className="section role-section">
         <div className="container-xxl"><div className="row g-4 align-items-center">
           <div className="col-lg-2"><SectionTitle title="Role-Based Learning"/><p>Content is organized and assigned based on your role, so you get learning that is relevant and meaningful.</p></div>
           <div className="col-lg-7"><div className="role-flow">{roleBased.map(([icon,title],i)=><React.Fragment key={title}><div className="role-card"><i className={`bi ${icon}`}></i><h6>{title}</h6></div>{i<roleBased.length-1 && <span className="arrow">›</span>}</React.Fragment>)}</div></div>
@@ -140,7 +193,7 @@ function App() {
           {['Profiling|Build comprehensive profiles to understand talent potential.','Behavioral Assessments|Gain insights into behaviors and workplace preferences.','Technical Assessments|Evaluate skills and technical competencies with confidence.','Readiness for Growth|Identify high-potential talent ready for future opportunities.'].map((x,i)=>{const [a,b]=x.split('|');return <div className="talent-row" key={a}><i className={`bi ${['bi-person-lines-fill','bi-heart-pulse','bi-clipboard-check','bi-graph-up-arrow'][i]}`}></i><h5>{a}</h5><p>{b}</p></div>})}
         </div><div className="col-lg-6"><img className="rounded-img" src={talentImg}/></div></div></div></section>
 
-      <section className="section"><div className="container-xxl"><SectionTitle title="How JumpIn Works"/><p className="lead-text w-lg-50">A simple learning journey designed to help you access, complete, and track your development activities in one platform.</p><div className="step-grid">{steps.map(([icon,title,desc],i)=><div className="step-card" key={title}><span>{i+1}</span><i className={`bi ${icon}`}></i><h5>{title}</h5><p>{desc}</p></div>)}</div></div></section>
+      <section id="how-it-works" className="section"><div className="container-xxl"><SectionTitle title="How JumpIn Works"/><p className="lead-text w-lg-50">A simple learning journey designed to help you access, complete, and track your development activities in one platform.</p><div className="step-grid">{steps.map(([icon,title,desc],i)=><div className="step-card" key={title}><span>{i+1}</span><i className={`bi ${icon}`}></i><h5>{title}</h5><p>{desc}</p></div>)}</div></div></section>
 
       <section className="section pt-0"><div className="container-xxl"><div className="row align-items-center g-5"><div className="col-lg-5"><img className="rounded-img" src={learnImg}/></div><div className="col-lg-7"><SectionTitle title="Learn Anytime, Anywhere"/><p className="lead-text">Access learning wherever you are—on desktop, mobile, or even offline. Stay connected to your development anytime, anywhere.</p><div className="feature-grid three mt-4">{['Web Access','Mobile Access','Offline Learning'].map((x,i)=><div className="mini-card" key={x}><i className={`bi ${['bi-display','bi-phone','bi-cloud-arrow-down'][i]}`}></i><h6>{x}</h6><p>{['Access JumpIn using your computer or laptop.','Learn on the go using your device.','Continue learning even without internet.*'][i]}</p></div>)}</div><small>*Available for selected content</small></div></div></div></section>
 
@@ -148,9 +201,9 @@ function App() {
 
       <section className="section pt-0"><div className="container-xxl"><div className="row g-4"><div className="col-lg-6"><FeaturePanel title="For Managers & Supervisors" icon="bi-people" items={managerList}/></div><div className="col-lg-6"><FeaturePanel title="For Training Administrators & Principals" icon="bi-person-gear" items={adminList}/></div></div></div></section>
 
-      <section className="section dashboard"><div className="container-xxl"><div className="row align-items-center g-5"><div className="col-lg-5"><SectionTitle title="Dashboard and Reports"/><p className="lead-text">Real-time data that helps you monitor, analyze, and improve learning.</p><div className="dash-metrics">{['1,256|Total Learners','78%|Completion Rate','184|In Progress','27|Overdue','95%|Assessment Pass Rate','Reports|View and export learning reports'].map(x=>{const [a,b]=x.split('|');return <div><b>{a}</b><span>{b}</span></div>})}</div></div><div className="col-lg-7"><img className="laptop-img" src={dashboardLaptop}/></div></div><div className="insight"><i className="bi bi-graph-up"></i> Make data-driven decisions with easy access to key learning insights and reports.</div></div></section>
+      <section id="dashboards" className="section dashboard"><div className="container-xxl"><div className="row align-items-center g-5"><div className="col-lg-5"><SectionTitle title="Dashboard and Reports"/><p className="lead-text">Real-time data that helps you monitor, analyze, and improve learning.</p><div className="dash-metrics">{['1,256|Total Learners','78%|Completion Rate','184|In Progress','27|Overdue','95%|Assessment Pass Rate','Reports|View and export learning reports'].map(x=>{const [a,b]=x.split('|');return <div><b>{a}</b><span>{b}</span></div>})}</div></div><div className="col-lg-7"><img className="laptop-img" src={dashboardLaptop}/></div></div><div className="insight"><i className="bi bi-graph-up"></i> Make data-driven decisions with easy access to key learning insights and reports.</div></div></section>
 
-      <section className="section pt-0"><div className="container-xxl"><div className="row g-4"><InfoColumn title="Featured Learning Areas" icon="bi-award" items={['Safety and Compliance','Technical and Functional','Behavioral Skills','Industry Focused Learning','Reference Materials']}/><InfoColumn title="Announcements" icon="bi-megaphone" items={['New Course — Bridge Maintenance Management','Learning Campaign — Safety First, Always','Important Bulletin & Communications','System Update']}/><InfoColumn title="Help and Support" icon="bi-headset" items={['How to log in','Accessing your courses','Using offline mode','Tracking your progress','FAQs','Contact Support']}/></div></div></section>
+      <section id="help-center" className="section pt-0"><div className="container-xxl"><div className="row g-4"><InfoColumn title="Featured Learning Areas" icon="bi-award" items={['Safety and Compliance','Technical and Functional','Behavioral Skills','Industry Focused Learning','Reference Materials']}/><InfoColumn title="Announcements" icon="bi-megaphone" items={['New Course — Bridge Maintenance Management','Learning Campaign — Safety First, Always','Important Bulletin & Communications','System Update']}/><InfoColumn title="Help and Support" icon="bi-headset" items={['How to log in','Accessing your courses','Using offline mode','Tracking your progress','FAQs','Contact Support']}/></div></div></section>
 
       <section className="container-xxl"><div className="cta"><div><h3>Start Your Learning Journey Today</h3><p>Access your assigned training, complete your tasks, and grow every day with JumpIn.</p></div><div className="d-flex gap-3"><a className="btn btn-green">Login to JumpIn</a><a className="btn btn-outline-light">Book a Demo</a></div></div></section>
     </main>
