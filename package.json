@@ -6,15 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^5.4.11",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "react": "latest",
     "react-dom": "latest",
-    "bootstrap": "^5.3.3",
-    "bootstrap-icons": "^1.11.3"
+    "vite": "^5.4.11"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  },
+  "homepage": "https://markmagsaysay1234.github.io/JumpInWebsiteV2"
 }
