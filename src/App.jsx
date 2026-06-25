@@ -12,8 +12,10 @@ import talentImg2 from "./assets/talent-img-2.webp";
 import learnImg from "./assets/learn-img.webp";
 import progressScreen from "./assets/progress-screen.webp";
 import dashboardLaptop from "./assets/dashboard-laptop.webp";
+import demoBanner from "./assets/demo-banner.webp";
 
 const GREEN = "#97A961";
+const LOGIN_URL = "https://auth.jumplearning.com/Account/Login";
 
 function Logo() {
   return <img src={logo} alt="JumpIn" className="jumpin-logo" />;
@@ -194,6 +196,7 @@ const navLinks = [
 
 function App() {
   const [activeSection, setActiveSection] = useState("home");
+  const [showDemoModal, setShowDemoModal] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -261,7 +264,12 @@ function App() {
                 </li>
               ))}
             </ul>
-            <a className="btn btn-green" href="#">
+            <a
+              className="btn btn-green"
+              href={LOGIN_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Login to JumpIn
             </a>
           </div>
@@ -298,8 +306,21 @@ function App() {
                 ))}
               </div>
               <div className="d-flex gap-3 flex-wrap mb-5">
-                <a className="btn btn-green btn-lg">Login to JumpIn</a>
-                <a className="btn btn-outline-light btn-lg">Book a Demo</a>
+                <a
+                  className="btn btn-green btn-lg"
+                  href={LOGIN_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Login to JumpIn
+                </a>
+                <button
+                  type="button"
+                  className="btn btn-outline-light btn-lg"
+                  onClick={() => setShowDemoModal(true)}
+                >
+                  Book a Demo
+                </button>
               </div>
             </div>
           </div>
@@ -698,7 +719,13 @@ function App() {
             </div>
 
             <div className="cta-actions">
-              <a className="btn btn-green cta-btn">Book a Demo</a>
+              <button
+                type="button"
+                className="btn btn-green cta-btn"
+                onClick={() => setShowDemoModal(true)}
+              >
+                Book a Demo
+              </button>
               <a className="store-btn">
                 <i className="bi bi-google-play"></i>
                 <span>
@@ -707,7 +734,15 @@ function App() {
                 </span>
               </a>
 
-              <a className="btn btn-green cta-btn">Login to JumpIn <i className="bi bi-arrow-right"></i></a>
+              <a
+                className="btn btn-green cta-btn"
+                href={LOGIN_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Login to JumpIn
+                <i className="bi bi-arrow-right ms-2"></i>
+              </a>
               <a className="store-btn">
                 <i className="bi bi-apple"></i>
                 <span>
@@ -720,8 +755,273 @@ function App() {
         </section>
       </main>
 
+      <DemoModal
+        show={showDemoModal}
+        onClose={() => setShowDemoModal(false)}
+      />
+
       <Footer />
     </>
+  );
+}
+
+function DemoModal({ show, onClose }) {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    company: "",
+    phone: "",
+    companySize: "",
+    preferredSchedule: "",
+    message: "",
+  });
+
+  const [errors, setErrors] = useState({});
+
+  if (!show) return null;
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required.";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Business email is required.";
+    } else if (!emailPattern.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+
+    if (!formData.company.trim()) {
+      newErrors.company = "Company or department is required.";
+    }
+
+    if (!formData.companySize) {
+      newErrors.companySize = "Please select a company size.";
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) return;
+
+    alert("Demo request submitted successfully!");
+    onClose();
+  };
+
+  return (
+    <div
+      className="modal fade show d-block demo-modal demo-modal-backdrop"
+      tabIndex="-1"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="modal-dialog modal-xl modal-dialog-centered">
+        <div className="modal-content demo-modal-content border-0">
+          <div className="row g-0">
+            <div
+              className="col-lg-5 demo-modal-left"
+              style={{ backgroundImage: `url(${demoBanner})` }}
+            >
+              <Logo />
+              <h3>Schedule a Demo</h3>
+              <p>
+                See how JumpIn can help streamline learning, training,
+                compliance, and workforce development in one platform.
+              </p>
+
+              <div className="demo-modal-benefits">
+                <div className="benefit-item">
+                  <i className="bi bi-check-circle-fill"></i>
+                  <span>Role-based learning access</span>
+                </div>
+
+                <div className="benefit-item">
+                  <i className="bi bi-check-circle-fill"></i>
+                  <span>Training progress monitoring</span>
+                </div>
+
+                <div className="benefit-item">
+                  <i className="bi bi-check-circle-fill"></i>
+                  <span>Dashboard and reporting tools</span>
+                </div>
+              </div>
+
+              <div className="demo-security">
+                <i className="bi bi-shield-lock-fill"></i>
+                <div>
+                  <strong>Your information is safe.</strong>
+                  <p>
+                    We respect your privacy and will only use your information
+                    to contact you regarding your request.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-lg-7 demo-modal-form">
+              <div className="demo-modal-header">
+                <div>
+                  <h4 className="modal-title fw-bold">Book a Demo</h4>
+                  <p>Tell us a few details and our team will get back to you.</p>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={onClose}
+                  aria-label="Close"
+                ></button>
+              </div>
+
+              <form onSubmit={handleSubmit} noValidate>
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <label className="form-label">Full Name *</label>
+                    <input
+                      name="fullName"
+                      type="text"
+                      className={`form-control ${errors.fullName ? "is-invalid" : ""}`}
+                      placeholder="Enter your full name"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                    />
+                    {errors.fullName && (
+                      <div className="invalid-feedback">{errors.fullName}</div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label">Business Email *</label>
+                    <input
+                      name="email"
+                      type="email"
+                      className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={handleChange}
+                    />
+                    {errors.email && (
+                      <div className="invalid-feedback">{errors.email}</div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label">
+                      Company / Department *
+                    </label>
+                    <input
+                      name="company"
+                      type="text"
+                      className={`form-control ${errors.company ? "is-invalid" : ""}`}
+                      placeholder="Company or department"
+                      value={formData.company}
+                      onChange={handleChange}
+                    />
+                    {errors.company && (
+                      <div className="invalid-feedback">{errors.company}</div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label">Phone Number</label>
+                    <input
+                      name="phone"
+                      type="text"
+                      className="form-control"
+                      placeholder="Enter phone number"
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label">Company Size *</label>
+                    <select
+                      name="companySize"
+                      className={`form-select ${errors.companySize ? "is-invalid" : ""}`}
+                      value={formData.companySize}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select company size</option>
+                      <option>1 - 50</option>
+                      <option>51 - 200</option>
+                      <option>201 - 500</option>
+                      <option>501 - 1,000</option>
+                      <option>1,000+</option>
+                    </select>
+                    {errors.companySize && (
+                      <div className="invalid-feedback">
+                        {errors.companySize}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label">Preferred Schedule</label>
+                    <input
+                      name="preferredSchedule"
+                      type="date"
+                      className="form-control"
+                      value={formData.preferredSchedule}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="col-12">
+                    <label className="form-label">Message</label>
+                    <textarea
+                      name="message"
+                      rows="4"
+                      className="form-control"
+                      placeholder="Tell us what you need or what you want to discuss"
+                      value={formData.message}
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div className="demo-modal-actions mt-3 d-flex justify-content-end gap-3">
+                  <button
+                    type="button"
+                    className="btn btn-light"
+                    onClick={onClose}
+                  >
+                    Cancel
+                  </button>
+
+                  <button type="submit" className="btn btn-green">
+                    Submit Request
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
