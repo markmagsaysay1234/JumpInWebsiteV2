@@ -197,6 +197,11 @@ const navLinks = [
 function App() {
   const [activeSection, setActiveSection] = useState("home");
   const [showDemoModal, setShowDemoModal] = useState(false);
+  const [showFeatureModal, setShowFeatureModal] = useState(false);
+  const [activeFeatureModal, setActiveFeatureModal] = useState(0);
+
+  const [showAudienceModal, setShowAudienceModal] = useState(false);
+  const [activeAudience, setActiveAudience] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -347,10 +352,18 @@ function App() {
                   easier to access, learn, and complete training.
                 </p>
                 <div className="feature-grid five mt-4">
-                  {featureCards.map(([icon, title]) => (
-                    <div className="mini-card" key={title}>
-                      <i className={`bi ${icon}`}></i>
-                      <h6>{title}</h6>
+                  {featureCards.map(([icon, title], index) => (
+                    <div
+                        className="mini-card feature-click-card"
+                        onClick={()=>{
+                            setActiveFeatureModal(index);
+                            setShowFeatureModal(true);
+                        }}
+                        role="button"
+                        tabIndex={0}
+                    >
+                        <i className={`bi ${icon}`}></i>
+                        <h6>{title}</h6>
                     </div>
                   ))}
                 </div>
@@ -366,9 +379,15 @@ function App() {
               title="Who is JumpIn is for?"
             />
             <div className="row g-4 mt-2">
-              {audiences.map(([img, icon, title, desc]) => (
+              {audiences.map(([img, icon, title, desc], index) => (
                 <div className="col-md-6 col-xl-3" key={title}>
-                  <div className="aud-card">
+                  <div className="aud-card aud-click-card"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      setActiveAudience(index);
+                      setShowAudienceModal(true);
+                    }}>
                     <img src={img} />
                     <div className="aud-body">
                       <i className={`bi ${icon}`}></i>
@@ -760,9 +779,184 @@ function App() {
         onClose={() => setShowDemoModal(false)}
       />
 
+      <FeatureDetailsModal
+        show={showFeatureModal}
+        activeIndex={activeFeatureModal}
+        setActiveIndex={setActiveFeatureModal}
+        onClose={() => setShowFeatureModal(false)}
+      />
+
+      <AudienceDetailsModal
+        show={showAudienceModal}
+        activeIndex={activeAudience}
+        onClose={() => setShowAudienceModal(false)}
+      />
+
       <Footer />
     </>
   );
+}
+
+function FeatureDetailsModal({ show, activeIndex, setActiveIndex, onClose }) {
+  if (!show) return null;
+
+  const details = [
+    {
+      icon: "bi-journal-bookmark",
+      title: "Role-Based Access",
+      desc: "JumpIn provides learning content based on the user's role, job family, department, vessel assignment, rank, or learner group.",
+    },
+    {
+      icon: "bi-files",
+      title: "Multiple Types of Learning Content",
+      desc: "Users can access e-learning courses, articles, case studies, reading materials, videos, reference materials, and other learning formats.",
+    },
+    {
+      icon: "bi-phone",
+      title: "Online, Offline and Mobile Access",
+      desc: "Learning can be accessed through desktop or mobile devices, with offline access available for selected content.",
+    },
+    {
+      icon: "bi-check-circle",
+      title: "Track Learning Progress",
+      desc: "Users and managers can monitor assigned learning, in-progress courses, completed activities, and overdue items.",
+    },
+    {
+      icon: "bi-clipboard2-pulse",
+      title: "Supports Training Deployment",
+      desc: "Training administrators can assign learning, monitor participation, run campaigns, and support organization-wide training deployment.",
+    },
+  ];
+
+  return (
+    <div className="modal fade show d-block feature-modal-backdrop">
+      <div className="modal-dialog modal-lg modal-dialog-centered">
+        <div className="modal-content feature-modal-content border-0">
+          <div className="feature-modal-header">
+            <div>
+              <h4 className="fw-bold mb-1">JumpIn Platform Features</h4>
+              <p className="mb-0">
+                Learn more about the key capabilities available in JumpIn.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className="btn-close"
+              onClick={onClose}
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div className="feature-modal-body">
+            {details.map((item, index) => (
+              <div
+                className={`feature-modal-item ${
+                  activeIndex === index ? "active" : ""
+                }`}
+                key={item.title}
+              >
+                <button
+                  type="button"
+                  className="feature-modal-trigger"
+                  onClick={() => setActiveIndex(index)}
+                >
+                  <span className="feature-modal-icon">
+                    <i className={`bi ${item.icon}`}></i>
+                  </span>
+
+                  <span>{item.title}</span>
+
+                  <i
+                    className={`bi ${
+                      activeIndex === index
+                        ? "bi-chevron-up"
+                        : "bi-chevron-down"
+                    }`}
+                  ></i>
+                </button>
+
+                {activeIndex === index && (
+                  <div className="feature-modal-description">
+                    <p>{item.desc}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AudienceDetailsModal({ show, activeIndex, onClose }) {
+  if (!show) return null;
+
+  const details = [
+    {
+      img: whoCrew,
+      icon: "bi-people",
+      title: "Crew & Cadets",
+      desc: "JumpIn supports crew members and cadets by providing learning content that is relevant to their rank, vessel assignment, and onboard responsibilities. It helps them complete required training, access reference materials, and stay updated with learning activities wherever they are.",
+    },
+    {
+      img: whoLand,
+      icon: "bi-building",
+      title: "Landbased Employees",
+      desc: "For landbased employees, JumpIn provides access to learning resources aligned with business functions, department needs, and career development goals. It supports continuous learning, compliance training, and upskilling for day-to-day work responsibilities.",
+    },
+    {
+      img: whoCorp,
+      icon: "bi-person",
+      title: "Corporate Employees",
+      desc: "Corporate employees can use JumpIn to complete assigned courses, track development progress, and strengthen competencies needed for performance and professional growth. The platform helps make learning more accessible, organized, and role-relevant.",
+    },
+    {
+      img: whoAdmin,
+      icon: "bi-briefcase",
+      title: "L&D / Training Administrators",
+      desc: "L&D and training administrators can manage learning content, assign courses to groups or individuals, monitor completion, publish announcements, and generate reports. JumpIn helps simplify training deployment and provides better visibility across learning activities.",
+    },
+  ];
+
+  const item = details[activeIndex];
+
+  return (
+    <div className="modal fade show d-block audience-modal-backdrop">
+      <div className="modal-dialog modal-xl modal-dialog-centered">
+        <div className="modal-content audience-modal-content border-0">
+          <button
+            type="button"
+            className="btn-close audience-close"
+            onClick={onClose}
+            aria-label="Close"
+          ></button>
+
+          <div className="audience-split">
+            <div className="audience-split-img">
+              <img src={item.img} alt={item.title} />
+            </div>
+
+            <div className="audience-split-content">
+              <div className="audience-modal-title">
+                <i className={`bi ${item.icon}`}></i>
+                <h3>{item.title}</h3>
+              </div>
+
+              <p>{item.desc}</p>
+
+              <div className="audience-points">
+                <span><i className="bi bi-check-circle-fill"></i> Role-based learning access</span>
+                <span><i className="bi bi-check-circle-fill"></i> Assigned training visibility</span>
+                <span><i className="bi bi-check-circle-fill"></i> Progress tracking support</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    );
 }
 
 function DemoModal({ show, onClose }) {
